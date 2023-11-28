@@ -7,6 +7,6 @@ export class JiraController {
 
   @Get()
   async fetchJiraIssues() {
-    return this.jiraService.getIssues();
+    return this.jiraService.getFutureIssues();
   }
 }
