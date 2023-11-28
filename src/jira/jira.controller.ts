@@ -9,4 +9,8 @@ export class JiraController {
   async fetchJiraIssues() {
     return this.jiraService.getFutureIssues();
   }
+  @Get('dashboard')
+  async fetchJiraIssuesForDashboard() {
+    return this.jiraService.getDashboardIssues();
+  }
 }

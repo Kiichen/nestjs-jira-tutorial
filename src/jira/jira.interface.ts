@@ -6,6 +6,14 @@ export interface EnvironmentVariables {
   };
 }
 
+export interface DashboardIssue {
+  summary: string;
+  project: string;
+  status: string;
+  assignee: string;
+  storypoints: number;
+}
+
 export interface JiraSearchResponse {
   expand: string;
   startAt: number;
@@ -33,6 +41,8 @@ export interface Fields {
   description: string;
   issuetype: Issuetype;
   project: Project;
+  subtasks: Issue[];
+  customfield_10016: number | null;
 }
 
 export interface Project {

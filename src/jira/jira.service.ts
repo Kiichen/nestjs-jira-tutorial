@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EnvironmentVariables, JiraSearchResponse } from './jira.interface';
+import {
+  DashboardIssue,
+  EnvironmentVariables,
+  JiraSearchResponse,
+} from './jira.interface';
 
 @Injectable()
 export class JiraService {
@@ -37,5 +41,18 @@ export class JiraService {
   ): Promise<JiraSearchResponse> {
     const query = `assignee = ${employee} AND sprint in (openSprints(), futureSprints())`;
     return this.getIssues(query);
+  }
+
+  async getDashboardIssues(): Promise<DashboardIssue[]> {
+    return (await this.getFutureIssues()).issues.map((issue) => ({
+      summary: issue.fields.summary,
+      project: issue.fields.project.name,
+      status: issue.fields.status.name,
+      assignee: issue.fields.assignee?.displayName,
+      storypoints:
+        issue.fields.customfield_10016 && !issue.fields.subtasks.length
+          ? issue.fields.customfield_10016
+          : 0,
+    }));
   }
 }
