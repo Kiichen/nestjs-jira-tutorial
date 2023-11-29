@@ -14,8 +14,8 @@ export class JiraService {
   constructor(private configService: ConfigService<EnvironmentVariables>) {
     const authentication = this.configService.get('authentication', {
       infer: true,
-    });
-    this.url = this.configService.get('url');
+    })!;
+    this.url = this.configService.get('url')!;
     this.defaultOptions = {
       headers: {
         Authorization: `Basic ${Buffer.from(

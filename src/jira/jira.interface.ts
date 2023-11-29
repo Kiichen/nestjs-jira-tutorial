@@ -10,7 +10,7 @@ export interface DashboardIssue {
   summary: string;
   project: string;
   status: string;
-  assignee: string;
+  assignee?: string;
   storypoints: number;
 }
 
@@ -33,7 +33,7 @@ export interface Issue {
 export interface Fields {
   summary: string;
   status: Status;
-  assignee: Assignee;
+  assignee: Assignee | null;
   creator: Assignee;
   reporter: Assignee;
   created: string;

@@ -26,20 +26,20 @@ export class AppService {
     const jiraIds = new Set(employees.map((employee) => employee.jira_id));
 
     for (const issue of issues) {
-      const accountId = issue.fields.assignee?.accountId;
+      const assignee = issue.fields.assignee;
 
-      if (!accountId || jiraIds.has(accountId)) {
+      if (!assignee || jiraIds.has(assignee.accountId)) {
         continue;
       }
 
       const employee: (typeof schema.employees)['$inferInsert'] = {
-        display_name: issue.fields.assignee.displayName,
-        email: issue.fields.assignee.emailAddress,
+        display_name: assignee.displayName,
+        email: assignee.emailAddress,
         employee_workload: 80,
-        jira_id: accountId,
+        jira_id: assignee.accountId,
       };
       await this.drizzleDev.insert(schema.employees).values(employee).execute();
-      jiraIds.add(accountId);
+      jiraIds.add(assignee.accountId);
     }
   }
 }
