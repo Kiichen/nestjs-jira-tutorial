@@ -12,5 +12,6 @@ import jiraConfig from './jira.config';
       load: [jiraConfig],
     }),
   ],
+  exports: [JiraService],
 })
 export class JiraModule {}
