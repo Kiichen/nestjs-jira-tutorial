@@ -1,10 +1,20 @@
-export interface EnvironmentVariables {
-  url: string;
-  authentication: {
-    username: string;
-    token: string;
-  };
-}
+import z from 'zod';
+
+export const envSchema = z
+  .object({
+    JIRA_URL: z.string(),
+    JIRA_USERNAME: z.string(),
+    JIRA_TOKEN: z.string(),
+  })
+  .transform((input) => ({
+    url: input.JIRA_URL,
+    authentication: {
+      username: input.JIRA_USERNAME,
+      token: input.JIRA_TOKEN,
+    },
+  }));
+
+export interface EnvironmentVariables extends z.infer<typeof envSchema> {}
 
 export interface DashboardIssue {
   summary: string;
