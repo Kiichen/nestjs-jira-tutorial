@@ -29,11 +29,14 @@ export class AppService {
   }
 
   @Cron(CronExpression.EVERY_HOUR)
-  async getUsers() {
+  async processIssues() {
     const issues = (await this.jiraService.getFutureIssues()).issues;
 
     const jiraIds = await this.getUniqueJiraIds();
     const projectIds = await this.getUniqueProjectIds();
+
+    const employees: (typeof schema.employees)['$inferInsert'][] = [];
+    const projects: (typeof schema.projects)['$inferInsert'][] = [];
 
     for (const issue of issues) {
       const assignee = issue.fields.assignee;
@@ -43,25 +46,30 @@ export class AppService {
       }
 
       if (!jiraIds.has(assignee.accountId)) {
-        const employee: (typeof schema.employees)['$inferInsert'] = {
+        employees.push({
           display_name: assignee.displayName,
           email: assignee.emailAddress,
           employee_workload: 80,
           jira_id: assignee.accountId,
-        };
-        await this.db.insert(schema.employees).values(employee).execute();
+        });
         jiraIds.add(assignee.accountId);
       }
 
       const jiraProject = issue.fields.project;
       if (!projectIds.has(jiraProject.id)) {
-        const project: (typeof schema.projects)['$inferInsert'] = {
+        projects.push({
           name: jiraProject.name,
           jira_id: jiraProject.id,
-        };
-        await this.db.insert(schema.projects).values(project).execute();
+        });
         projectIds.add(jiraProject.id);
       }
+    }
+
+    if (employees.length > 0) {
+      await this.db.insert(schema.employees).values(employees).execute();
+    }
+    if (projects.length > 0) {
+      await this.db.insert(schema.projects).values(projects).execute();
     }
   }
 }
