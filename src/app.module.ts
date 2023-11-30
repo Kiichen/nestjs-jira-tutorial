@@ -4,12 +4,14 @@ import { AppService } from './app.service';
 import { JiraModule } from './jira/jira.module';
 import { DrizzleModule } from './drizzle/drizzle.module';
 import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
     JiraModule,
     DrizzleModule,
     ConfigModule.forRoot({ isGlobal: true }),
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],

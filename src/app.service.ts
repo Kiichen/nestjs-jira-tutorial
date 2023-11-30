@@ -3,6 +3,7 @@ import { MySql2Database } from 'drizzle-orm/mysql2';
 import * as schema from './drizzle/schema';
 import { DB_CONNECTION } from './drizzle/drizzle.module';
 import { JiraService } from './jira/jira.service';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class AppService {
@@ -27,6 +28,7 @@ export class AppService {
     return new Set(projects.map((project) => project.jira_id));
   }
 
+  @Cron(CronExpression.EVERY_HOUR)
   async getUsers() {
     const issues = (await this.jiraService.getFutureIssues()).issues;
 
