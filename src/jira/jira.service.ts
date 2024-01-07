@@ -5,30 +5,35 @@ import {
   EnvironmentVariables,
   JiraSearchResponse,
 } from './jira.interface';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class JiraService {
   private url: EnvironmentVariables['url'];
-  private defaultOptions: RequestInit;
 
-  constructor(private configService: ConfigService<EnvironmentVariables>) {
+  constructor(
+    private configService: ConfigService<EnvironmentVariables>,
+    private readonly httpService: HttpService,
+  ) {
     const authentication = this.configService.get('authentication', {
       infer: true,
     })!;
     this.url = this.configService.get('url')!;
-    this.defaultOptions = {
-      headers: {
-        Authorization: `Basic ${Buffer.from(
-          `${authentication.username}:${authentication.token}`,
-        ).toString('base64')}`,
-      },
-    };
+    this.httpService.axiosRef.interceptors.request.use(function (config) {
+      config.headers.Authorization = `Basic ${Buffer.from(
+        `${authentication.username}:${authentication.token}`,
+      ).toString('base64')}`;
+      return config;
+    });
   }
 
   private async getIssues(jql: string): Promise<JiraSearchResponse> {
     const url = `${this.url}/rest/api/3/search?jql=${jql}`;
-    const response = await fetch(url, this.defaultOptions);
-    return await response.json();
+    const { data } = await firstValueFrom(
+      this.httpService.get<JiraSearchResponse>(url),
+    );
+    return data;
   }
 
   async getFutureIssues(): Promise<JiraSearchResponse> {
