@@ -44,8 +44,31 @@ export const customers = mysqlTable('customers', {
   updated_at: timestamp('updated_at').onUpdateNow(),
 });
 
+export const employeesOnProjects = mysqlTable('employee_project', {
+  id: serial('id').primaryKey(),
+  employee_id: bigint('employee_id', {
+    mode: 'number',
+    unsigned: true,
+  })
+    .references(() => employees.id)
+    .notNull(),
+  project_id: bigint('project_id', {
+    mode: 'number',
+    unsigned: true,
+  })
+    .references(() => projects.id)
+    .notNull(),
+  created_at: timestamp('created_at').defaultNow(),
+  updated_at: timestamp('updated_at').onUpdateNow(),
+});
+
+export const employeesRelations = relations(employees, ({ many }) => ({
+  projects: many(projects),
+}));
+
 export const customersRelations = relations(customers, ({ many }) => ({
   projects: many(projects),
+  employees: many(employees),
 }));
 
 export const projectsRelations = relations(projects, ({ one }) => ({

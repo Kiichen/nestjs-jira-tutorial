@@ -34,6 +34,21 @@ export class AppService {
 
     const jiraIds = await this.getUniqueJiraIds();
     const projectIds = await this.getUniqueProjectIds();
+    const employeeOnProjectsMap = await this.db
+      .select()
+      .from(schema.employeesOnProjects)
+      .execute()
+      .then((rows) => {
+        const map = new Map<string, Set<number>>();
+        for (const row of rows) {
+          const employeeId = row.employee_id?.toString();
+          if (!map.has(employeeId)) {
+            map.set(employeeId, new Set());
+          }
+          map.get(employeeId)!.add(row.project_id);
+        }
+        return map;
+      });
 
     const employees: (typeof schema.employees)['$inferInsert'][] = [];
     const projects: (typeof schema.projects)['$inferInsert'][] = [];
@@ -63,6 +78,11 @@ export class AppService {
         });
         projectIds.add(jiraProject.id);
       }
+
+      employeeOnProjectsMap.set(
+        assignee.accountId,
+        (employeeOnProjectsMap.get(assignee.accountId) ?? new Set()).add(1),
+      );
     }
 
     if (employees.length > 0) {
