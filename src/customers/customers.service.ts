@@ -20,7 +20,8 @@ export class CustomersService {
   }
 
   async findAll() {
-    return this.db.select().from(schema.customers).execute();
+    return await this.db.query.customers.findMany({ columns: { name: false } });
+    // return this.db.select().from(schema.customers).execute();
   }
 
   findOne(id: number) {

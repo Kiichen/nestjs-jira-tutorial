@@ -18,6 +18,9 @@ import {
   updateCustomerSchema,
 } from './dto/update-customer.dto';
 import { ZodValidationPipe } from './validation.pipe';
+import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
+import { zodToOpenAPI } from 'nestjs-zod';
+import { listCustomerSchema } from './dto/list-customer.dto';
 
 @Controller('customers')
 export class CustomersController {
@@ -25,11 +28,19 @@ export class CustomersController {
 
   @Post()
   @UsePipes(new ZodValidationPipe(createCustomerSchema))
+  @ApiBody({ schema: zodToOpenAPI(createCustomerSchema) })
+  @ApiOkResponse({
+    type: Number,
+  })
   create(@Body() createCustomerDto: CreateCustomerDto) {
     return this.customersService.create(createCustomerDto);
   }
 
   @Get()
+  // @UsePipes(new ZodValidationPipe(listCustomerSchema))
+  @ApiOkResponse({
+    schema: zodToOpenAPI(listCustomerSchema),
+  })
   findAll() {
     return this.customersService.findAll();
   }

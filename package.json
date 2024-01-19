@@ -26,6 +26,7 @@
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/schedule": "^4.0.0",
+    "@nestjs/swagger": "^7.2.0",
     "axios": "^1.6.4",
     "drizzle-orm": "^0.29.0",
     "drizzle-zod": "^0.5.1",
